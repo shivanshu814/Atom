@@ -1,3 +1,0 @@
-# Lets clangd (VS Code) find the include paths and C++20 flags CMake uses.
-CompileFlags:
-  CompilationDatabase: build/debug
