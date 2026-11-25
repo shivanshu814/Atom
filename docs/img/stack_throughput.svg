@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420" font-family="Helvetica, Arial, sans-serif" font-size="13">
+<rect width="720" height="420" fill="#ffffff"/>
+<text x="80" y="28" font-size="16" font-weight="bold" fill="#111">Stack throughput (50% push / 50% pop)</text>
+<line x1="80" y1="360.0" x2="530" y2="360.0" stroke="#e5e5e5"/>
+<text x="72" y="364.0" text-anchor="end" fill="#444">0</text>
+<line x1="80" y1="50.0" x2="530" y2="50.0" stroke="#e5e5e5"/>
+<text x="72" y="54.0" text-anchor="end" fill="#444">100</text>
+<text x="80.0" y="380" text-anchor="middle" fill="#444">1</text>
+<text x="230.0" y="380" text-anchor="middle" fill="#444">2</text>
+<text x="380.0" y="380" text-anchor="middle" fill="#444">4</text>
+<text x="530.0" y="380" text-anchor="middle" fill="#444">8</text>
+<line x1="80" y1="360" x2="530" y2="360" stroke="#888"/>
+<text x="305.0" y="405" text-anchor="middle" fill="#222">threads</text>
+<text transform="translate(18,205.0) rotate(-90)" text-anchor="middle" fill="#222">million ops / sec</text>
+<polyline points="80.0,52.0 230.0,163.9 380.0,265.9 530.0,217.3" fill="none" stroke="#000000" stroke-width="2.5" stroke-dasharray="6 4"/>
+<circle cx="80.0" cy="52.0" r="4" fill="#000000"/>
+<circle cx="230.0" cy="163.9" r="4" fill="#000000"/>
+<circle cx="380.0" cy="265.9" r="4" fill="#000000"/>
+<circle cx="530.0" cy="217.3" r="4" fill="#000000"/>
+<line x1="545" y1="60" x2="570" y2="60" stroke="#000000" stroke-width="2.5" stroke-dasharray="6 4"/>
+<text x="576" y="64" fill="#222">MutexStack</text>
+<polyline points="80.0,153.0 230.0,293.6 380.0,317.3 530.0,341.9" fill="none" stroke="#CC79A7" stroke-width="2.5"/>
+<circle cx="80.0" cy="153.0" r="4" fill="#CC79A7"/>
+<circle cx="230.0" cy="293.6" r="4" fill="#CC79A7"/>
+<circle cx="380.0" cy="317.3" r="4" fill="#CC79A7"/>
+<circle cx="530.0" cy="341.9" r="4" fill="#CC79A7"/>
+<line x1="545" y1="82" x2="570" y2="82" stroke="#CC79A7" stroke-width="2.5"/>
+<text x="576" y="86" fill="#222">Treiber+HP</text>
+<polyline points="80.0,162.9 230.0,261.1 380.0,323.9 530.0,346.3" fill="none" stroke="#E69F00" stroke-width="2.5"/>
+<circle cx="80.0" cy="162.9" r="4" fill="#E69F00"/>
+<circle cx="230.0" cy="261.1" r="4" fill="#E69F00"/>
+<circle cx="380.0" cy="323.9" r="4" fill="#E69F00"/>
+<circle cx="530.0" cy="346.3" r="4" fill="#E69F00"/>
+<line x1="545" y1="104" x2="570" y2="104" stroke="#E69F00" stroke-width="2.5"/>
+<text x="576" y="108" fill="#222">Treiber+EBR</text>
+</svg>

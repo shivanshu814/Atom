@@ -1,0 +1,6 @@
+ProductName:		macOS
+ProductVersion:		27.0
+BuildVersion:		26A428
+Apple M1 Pro
+Apple clang version 21.0.0 (clang-2100.4.1.1)
+21:36  up 8 days, 12:10, 1 user, load averages: 4.60 4.58 4.07

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420" font-family="Helvetica, Arial, sans-serif" font-size="13">
+<rect width="720" height="420" fill="#ffffff"/>
+<text x="80" y="28" font-size="16" font-weight="bold" fill="#111">MPSC p99.9 latency (log scale)</text>
+<line x1="80" y1="360.0" x2="530" y2="360.0" stroke="#e5e5e5"/>
+<text x="72" y="364.0" text-anchor="end" fill="#444">10 µs</text>
+<line x1="80" y1="256.7" x2="530" y2="256.7" stroke="#e5e5e5"/>
+<text x="72" y="260.7" text-anchor="end" fill="#444">100 µs</text>
+<line x1="80" y1="153.3" x2="530" y2="153.3" stroke="#e5e5e5"/>
+<text x="72" y="157.3" text-anchor="end" fill="#444">1 ms</text>
+<line x1="80" y1="50.0" x2="530" y2="50.0" stroke="#e5e5e5"/>
+<text x="72" y="54.0" text-anchor="end" fill="#444">10 ms</text>
+<text x="80.0" y="380" text-anchor="middle" fill="#444">1</text>
+<text x="192.5" y="380" text-anchor="middle" fill="#444">2</text>
+<text x="305.0" y="380" text-anchor="middle" fill="#444">4</text>
+<text x="417.5" y="380" text-anchor="middle" fill="#444">6</text>
+<text x="530.0" y="380" text-anchor="middle" fill="#444">7</text>
+<line x1="80" y1="360" x2="530" y2="360" stroke="#888"/>
+<text x="305.0" y="405" text-anchor="middle" fill="#222">producers</text>
+<text transform="translate(18,205.0) rotate(-90)" text-anchor="middle" fill="#222">push to pop</text>
+<polyline points="80.0,238.0 192.5,151.2 305.0,109.0 417.5,77.9 530.0,104.8" fill="none" stroke="#000000" stroke-width="2.5" stroke-dasharray="6 4"/>
+<circle cx="80.0" cy="238.0" r="4" fill="#000000"/>
+<circle cx="192.5" cy="151.2" r="4" fill="#000000"/>
+<circle cx="305.0" cy="109.0" r="4" fill="#000000"/>
+<circle cx="417.5" cy="77.9" r="4" fill="#000000"/>
+<circle cx="530.0" cy="104.8" r="4" fill="#000000"/>
+<line x1="545" y1="60" x2="570" y2="60" stroke="#000000" stroke-width="2.5" stroke-dasharray="6 4"/>
+<text x="576" y="64" fill="#222">MutexQueue</text>
+<polyline points="80.0,92.6 192.5,304.0 305.0,313.5 417.5,264.5 530.0,233.4" fill="none" stroke="#D55E00" stroke-width="2.5"/>
+<circle cx="80.0" cy="92.6" r="4" fill="#D55E00"/>
+<circle cx="192.5" cy="304.0" r="4" fill="#D55E00"/>
+<circle cx="305.0" cy="313.5" r="4" fill="#D55E00"/>
+<circle cx="417.5" cy="264.5" r="4" fill="#D55E00"/>
+<circle cx="530.0" cy="233.4" r="4" fill="#D55E00"/>
+<line x1="545" y1="82" x2="570" y2="82" stroke="#D55E00" stroke-width="2.5"/>
+<text x="576" y="86" fill="#222">MpscQueue</text>
+<polyline points="80.0,327.8 192.5,320.6 305.0,320.6 417.5,284.1 530.0,254.7" fill="none" stroke="#009E73" stroke-width="2.5"/>
+<circle cx="80.0" cy="327.8" r="4" fill="#009E73"/>
+<circle cx="192.5" cy="320.6" r="4" fill="#009E73"/>
+<circle cx="305.0" cy="320.6" r="4" fill="#009E73"/>
+<circle cx="417.5" cy="284.1" r="4" fill="#009E73"/>
+<circle cx="530.0" cy="254.7" r="4" fill="#009E73"/>
+<line x1="545" y1="104" x2="570" y2="104" stroke="#009E73" stroke-width="2.5"/>
+<text x="576" y="108" fill="#222">BoundedMpmcQueue</text>
+</svg>

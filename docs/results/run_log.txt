@@ -1,0 +1,92 @@
+threads available: 10, runs per point: 5
+spsc   MutexQueue       P=1 C=1 cap=1024   throughput    27.14 M/s  (min 26.01, max 27.31)
+spsc   NaiveSpscQueue   P=1 C=1 cap=1024   throughput    32.60 M/s  (min 29.71, max 34.66)
+spsc   SpscQueue        P=1 C=1 cap=1024   throughput    32.01 M/s  (min 25.97, max 33.56)
+spsc   MutexQueue       P=1 C=1 cap=1024   latency @ 6.78 M/s  p50  12799  p99   65535  p99.9   118783 ns
+spsc   NaiveSpscQueue   P=1 C=1 cap=1024   latency @ 6.78 M/s  p50    115  p99  638975  p99.9   999423 ns
+spsc   SpscQueue        P=1 C=1 cap=1024   latency @ 6.78 M/s  p50    109  p99  212991  p99.9   483327 ns
+spsc   MutexQueue       P=1 C=1 cap=65536  throughput    30.29 M/s  (min 28.87, max 30.42)
+spsc   NaiveSpscQueue   P=1 C=1 cap=65536  throughput    11.25 M/s  (min 10.90, max 12.93)
+spsc   SpscQueue        P=1 C=1 cap=65536  throughput    10.56 M/s  (min 10.11, max 10.76)
+spsc   MutexQueue       P=1 C=1 cap=65536  latency @ 2.64 M/s  p50   7679  p99   53247  p99.9   122879 ns
+spsc   NaiveSpscQueue   P=1 C=1 cap=65536  latency @ 2.64 M/s  p50    147  p99    1663  p99.9    16383 ns
+spsc   SpscQueue        P=1 C=1 cap=65536  latency @ 2.64 M/s  p50    109  p99    2367  p99.9    15359 ns
+mpsc   MutexQueue       P=1 C=1 cap=65536  throughput    30.21 M/s  (min 30.06, max 30.44)
+mpsc   MpscQueue        P=1 C=1 cap=65536  throughput    14.18 M/s  (min 12.17, max 30.18)
+mpsc   BoundedMpmcQueue P=1 C=1 cap=65536  throughput    96.66 M/s  (min 71.28, max 102.43)
+mpsc   MutexQueue       P=1 C=1 cap=65536  latency @ 3.55 M/s  p50   9215  p99   64511  p99.9   151551 ns
+mpsc   MpscQueue        P=1 C=1 cap=65536  latency @ 3.55 M/s  p50    203  p99 3145727  p99.9  3866623 ns  (Retry polls: 36019454)
+mpsc   BoundedMpmcQueue P=1 C=1 cap=65536  latency @ 3.55 M/s  p50    111  p99     543  p99.9    20479 ns
+mpsc   MutexQueue       P=2 C=1 cap=65536  throughput    15.25 M/s  (min 15.14, max 16.53)
+mpsc   MpscQueue        P=2 C=1 cap=65536  throughput    26.14 M/s  (min 23.02, max 28.07)
+mpsc   BoundedMpmcQueue P=2 C=1 cap=65536  throughput    21.66 M/s  (min 20.18, max 21.97)
+mpsc   MutexQueue       P=2 C=1 cap=65536  latency @ 3.81 M/s  p50  17919  p99  327679  p99.9  1048575 ns
+mpsc   MpscQueue        P=2 C=1 cap=65536  latency @ 3.81 M/s  p50    251  p99    5247  p99.9    34815 ns  (Retry polls: 38690141)
+mpsc   BoundedMpmcQueue P=2 C=1 cap=65536  latency @ 3.81 M/s  p50    195  p99     719  p99.9    24063 ns
+mpsc   MutexQueue       P=4 C=1 cap=65536  throughput     9.52 M/s  (min 9.49, max 10.08)
+mpsc   MpscQueue        P=4 C=1 cap=65536  throughput    15.51 M/s  (min 14.98, max 16.64)
+mpsc   BoundedMpmcQueue P=4 C=1 cap=65536  throughput     6.85 M/s  (min 6.57, max 14.13)
+mpsc   MutexQueue       P=4 C=1 cap=65536  latency @ 1.71 M/s  p50  32767  p99 2359295  p99.9  2686975 ns
+mpsc   MpscQueue        P=4 C=1 cap=65536  latency @ 1.71 M/s  p50    735  p99    1087  p99.9    28159 ns  (Retry polls: 40529374)
+mpsc   BoundedMpmcQueue P=4 C=1 cap=65536  latency @ 1.71 M/s  p50    407  p99     863  p99.9    24063 ns
+mpsc   MutexQueue       P=6 C=1 cap=65536  throughput     7.24 M/s  (min 7.14, max 7.78)
+mpsc   MpscQueue        P=6 C=1 cap=65536  throughput    16.07 M/s  (min 15.79, max 16.14)
+mpsc   BoundedMpmcQueue P=6 C=1 cap=65536  throughput     4.27 M/s  (min 4.23, max 8.22)
+mpsc   MutexQueue       P=6 C=1 cap=65536  latency @ 1.07 M/s  p50  27135  p99 3866623  p99.9  5373951 ns
+mpsc   MpscQueue        P=6 C=1 cap=65536  latency @ 1.07 M/s  p50    815  p99    1247  p99.9    83967 ns  (Retry polls: 45946256)
+mpsc   BoundedMpmcQueue P=6 C=1 cap=65536  latency @ 1.07 M/s  p50    439  p99    1375  p99.9    54271 ns
+mpsc   MutexQueue       P=7 C=1 cap=65536  throughput     6.48 M/s  (min 6.29, max 7.24)
+mpsc   MpscQueue        P=7 C=1 cap=65536  throughput    16.01 M/s  (min 15.53, max 16.58)
+mpsc   BoundedMpmcQueue P=7 C=1 cap=65536  throughput     4.59 M/s  (min 3.73, max 7.48)
+mpsc   MutexQueue       P=7 C=1 cap=65536  latency @ 1.15 M/s  p50  14591  p99 2097151  p99.9  2949119 ns
+mpsc   MpscQueue        P=7 C=1 cap=65536  latency @ 1.15 M/s  p50    799  p99    9727  p99.9   167935 ns  (Retry polls: 49517355)
+mpsc   BoundedMpmcQueue P=7 C=1 cap=65536  latency @ 1.15 M/s  p50    431  p99    3007  p99.9   104447 ns
+mpmc   MutexQueue       P=1 C=1 cap=65536  throughput    29.76 M/s  (min 29.64, max 29.82)
+mpmc   BoundedMpmcQueue P=1 C=1 cap=65536  throughput   118.72 M/s  (min 85.91, max 131.02)
+mpmc   MutexQueue       P=1 C=1 cap=65536  latency @ 7.44 M/s  p50  12799  p99   67583  p99.9   143359 ns
+mpmc   BoundedMpmcQueue P=1 C=1 cap=65536  latency @ 7.44 M/s  p50    107  p99     607  p99.9    26111 ns
+mpmc   MutexQueue       P=1 C=2 cap=65536  throughput    12.44 M/s  (min 12.05, max 12.94)
+mpmc   BoundedMpmcQueue P=1 C=2 cap=65536  throughput    15.79 M/s  (min 13.34, max 17.95)
+mpmc   MutexQueue       P=1 C=2 cap=65536  latency @ 3.11 M/s  p50  30719  p99  184319  p99.9   270335 ns
+mpmc   BoundedMpmcQueue P=1 C=2 cap=65536  latency @ 3.11 M/s  p50    163  p99     575  p99.9    18943 ns
+mpmc   MutexQueue       P=1 C=4 cap=65536  throughput     9.23 M/s  (min 9.17, max 9.31)
+mpmc   BoundedMpmcQueue P=1 C=4 cap=65536  throughput     7.10 M/s  (min 7.00, max 8.81)
+mpmc   MutexQueue       P=1 C=4 cap=65536  latency @ 1.77 M/s  p50  24063  p99  163839  p99.9   249855 ns
+mpmc   BoundedMpmcQueue P=1 C=4 cap=65536  latency @ 1.77 M/s  p50    367  p99     559  p99.9    12287 ns
+mpmc   MutexQueue       P=2 C=1 cap=65536  throughput    14.66 M/s  (min 14.35, max 14.82)
+mpmc   BoundedMpmcQueue P=2 C=1 cap=65536  throughput    20.74 M/s  (min 20.09, max 26.60)
+mpmc   MutexQueue       P=2 C=1 cap=65536  latency @ 3.67 M/s  p50  16127  p99   88063  p99.9   139263 ns
+mpmc   BoundedMpmcQueue P=2 C=1 cap=65536  latency @ 3.67 M/s  p50    163  p99     671  p99.9    23551 ns
+mpmc   MutexQueue       P=2 C=2 cap=65536  throughput    12.38 M/s  (min 12.23, max 13.47)
+mpmc   BoundedMpmcQueue P=2 C=2 cap=65536  throughput    16.61 M/s  (min 15.91, max 18.74)
+mpmc   MutexQueue       P=2 C=2 cap=65536  latency @ 3.10 M/s  p50  10239  p99   77823  p99.9   126975 ns
+mpmc   BoundedMpmcQueue P=2 C=2 cap=65536  latency @ 3.10 M/s  p50    391  p99     671  p99.9    17919 ns
+mpmc   MutexQueue       P=2 C=4 cap=65536  throughput    13.01 M/s  (min 12.84, max 13.17)
+mpmc   BoundedMpmcQueue P=2 C=4 cap=65536  throughput     6.92 M/s  (min 6.76, max 7.06)
+mpmc   MutexQueue       P=2 C=4 cap=65536  latency @ 1.73 M/s  p50  22015  p99  241663  p99.9   868351 ns
+mpmc   BoundedMpmcQueue P=2 C=4 cap=65536  latency @ 1.73 M/s  p50    511  p99     655  p99.9     4735 ns
+mpmc   MutexQueue       P=4 C=1 cap=65536  throughput     9.50 M/s  (min 9.42, max 9.54)
+mpmc   BoundedMpmcQueue P=4 C=1 cap=65536  throughput     6.64 M/s  (min 6.38, max 7.39)
+mpmc   MutexQueue       P=4 C=1 cap=65536  latency @ 1.66 M/s  p50  24063  p99 4456447  p99.9  4849663 ns
+mpmc   BoundedMpmcQueue P=4 C=1 cap=65536  latency @ 1.66 M/s  p50    495  p99    1215  p99.9    13567 ns
+mpmc   MutexQueue       P=4 C=2 cap=65536  throughput    14.08 M/s  (min 13.80, max 14.36)
+mpmc   BoundedMpmcQueue P=4 C=2 cap=65536  throughput     8.19 M/s  (min 6.88, max 8.62)
+mpmc   MutexQueue       P=4 C=2 cap=65536  latency @ 2.05 M/s  p50  21503  p99   94207  p99.9   143359 ns
+mpmc   BoundedMpmcQueue P=4 C=2 cap=65536  latency @ 2.05 M/s  p50    447  p99     703  p99.9    16383 ns
+mpmc   MutexQueue       P=4 C=4 cap=65536  throughput    21.57 M/s  (min 20.71, max 23.44)
+mpmc   BoundedMpmcQueue P=4 C=4 cap=65536  throughput     6.62 M/s  (min 5.84, max 8.17)
+mpmc   MutexQueue       P=4 C=4 cap=65536  latency @ 1.65 M/s  p50  18431  p99  671743  p99.9  1409023 ns
+mpmc   BoundedMpmcQueue P=4 C=4 cap=65536  latency @ 1.65 M/s  p50    527  p99    3455  p99.9   475135 ns
+stack  MutexStack       T=1  throughput    99.35 M ops/s
+stack  Treiber+HP       T=1  throughput    66.78 M ops/s
+stack  Treiber+EBR      T=1  throughput    63.57 M ops/s
+stack  MutexStack       T=2  throughput    63.25 M ops/s
+stack  Treiber+HP       T=2  throughput    21.42 M ops/s
+stack  Treiber+EBR      T=2  throughput    31.89 M ops/s
+stack  MutexStack       T=4  throughput    30.35 M ops/s
+stack  Treiber+HP       T=4  throughput    13.77 M ops/s
+stack  Treiber+EBR      T=4  throughput    11.65 M ops/s
+stack  MutexStack       T=8  throughput    46.04 M ops/s
+stack  Treiber+HP       T=8  throughput     5.85 M ops/s
+stack  Treiber+EBR      T=8  throughput     4.43 M ops/s
+wrote docs/results/results.csv
