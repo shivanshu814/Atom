@@ -13,6 +13,7 @@ add_executable(atom_tests
     test_spsc_queue.cpp
     test_mpsc_queue.cpp
     test_bounded_mpmc_queue.cpp
+    test_treiber_stack.cpp
 )
 target_link_libraries(atom_tests PRIVATE atom::atom atom_warnings GTest::gtest_main)
 gtest_discover_tests(atom_tests DISCOVERY_TIMEOUT 60 PROPERTIES TIMEOUT 600)
