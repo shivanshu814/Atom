@@ -1,21 +1,5 @@
-// Atom benchmark: throughput and tail latency of every structure against its mutex baseline,
-// swept over producer / consumer (or thread) counts. Writes one CSV row per run; the median
-// of each configuration is printed as it goes. scripts/plot.py turns the CSV into charts.
-//
-//   atom_bench [--quick] [--runs N] [--load F] [--out results.csv] [--only spsc,mpsc,mpmc,stack]
-//
-// Method (docs/ATOM_DESIGN.md section 9):
-//  - Throughput: producers push a fixed number of items flat out; items / elapsed time.
-//  - Latency: producers push at a fixed total rate, a fraction (--load, default 0.25) of what
-//    the slowest queue in that configuration sustained, so every queue is measured at the
-//    same offered load. A run that cannot keep up with that rate is flagged. Each
-//    item carries the time it was *scheduled* to be sent, not when it was sent, so a stalled
-//    producer cannot hide the delay of the items it should have sent (coordinated omission).
-//  - One warm-up run, then N measured runs; the median is reported.
-//  - Every queue waits the same way when full or empty: Backoff (spin, then yield) in
-//    throughput mode; pure spinning in latency mode. Threads never outnumber the performance
-//    cores, and on macOS sched_yield() lowers the caller's priority for a while, which put
-//    milliseconds into every queue's tail when an idle consumer kept yielding.
+// atom_bench [--quick] [--runs N] [--load F] [--out results.csv] [--only spsc,mpsc,mpmc,stack]
+// Method and results: docs/BENCHMARKS.md
 
 #include <algorithm>
 #include <atomic>
@@ -50,9 +34,7 @@ namespace {
 
 using atom::bench::Histogram;
 
-// Latency timestamps are taken twice per item, so the clock read is on the measured path.
-// On Apple Silicon steady_clock::now() costs about 16 ns and mach_absolute_time() about
-// 6 ns (measured on the M1 Pro); both tick at 24 MHz, so neither resolves below ~41 ns.
+// ~6 ns per read vs ~16 ns for steady_clock on Apple Silicon.
 std::uint64_t now_ns() {
 #ifdef __APPLE__
     static const mach_timebase_info_data_t tb = [] {
@@ -68,8 +50,6 @@ std::uint64_t now_ns() {
 #endif
 }
 
-// macOS has no thread pinning. The highest QoS class at least asks the scheduler for the
-// performance cores.
 void prefer_performance_cores() {
 #ifdef __APPLE__
     pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
@@ -81,7 +61,6 @@ struct BenchItem {
     std::uint64_t ts  = 0;  // scheduled send time (latency mode)
 };
 
-// Lines every thread up, then releases them together.
 class StartGate {
 public:
     void arrive_and_wait() {
@@ -109,8 +88,7 @@ bool pop_counting(Q& q, BenchItem& out, std::uint64_t& retries) {
     }
 }
 
-// Written by every consumer, so it gets its own cache line, away from everything the
-// producers read in their loop.
+// Written by every consumer.
 struct alignas(atom::kCacheLine) Counter {
     std::atomic<std::uint64_t> value{0};
 };
@@ -123,8 +101,7 @@ struct RunResult {
     Histogram     hist;
 };
 
-// One run: P producers, C consumers, `total` items. rate == 0 is throughput mode; otherwise
-// producers send at `rate` items/sec in total and consumers record latency.
+// rate == 0: flat out; otherwise paced, recording latency.
 template <class Q>
 RunResult run_queue(const std::function<std::unique_ptr<Q>()>& make, unsigned P, unsigned C,
                     std::uint64_t total, double rate) {
@@ -143,7 +120,6 @@ RunResult run_queue(const std::function<std::unique_ptr<Q>()>& make, unsigned P,
     for (unsigned p = 0; p < P; ++p) {
         threads.emplace_back([&, p] {
             prefer_performance_cores();
-            // Locals, so the loop reads nothing that lives on the main thread's stack.
             Q&                  queue = *q;
             const std::uint64_t n     = per_producer;
             const double        step  = interval;
@@ -180,7 +156,6 @@ RunResult run_queue(const std::function<std::unique_ptr<Q>()>& make, unsigned P,
             for (;;) {
                 if (pop_counting(queue, it, tries)) {
                     if (timed) hist.record(now_ns() - it.ts);
-                    // Batched so consumers do not fight over the counter on every item.
                     if (++local == 256) {
                         consumed.value.fetch_add(local, std::memory_order_relaxed);
                         local = 0;
@@ -202,8 +177,7 @@ RunResult run_queue(const std::function<std::unique_ptr<Q>()>& make, unsigned P,
         });
     }
 
-    // In latency mode give the threads a moment to reach their spin loops before the first
-    // scheduled send, so the first items do not start out late.
+    // Let threads reach their spin loops before the first send.
     start_ns.store(now_ns() + (rate > 0 ? 2'000'000 : 0), std::memory_order_release);
     gate.open_when(P + C);
     for (auto& t : threads) t.join();
@@ -220,7 +194,6 @@ RunResult run_queue(const std::function<std::unique_ptr<Q>()>& make, unsigned P,
     return r;
 }
 
-// A std::mutex around a vector: the baseline for the lock-free stacks.
 class MutexStack {
 public:
     void push(std::uint64_t v) {
@@ -240,7 +213,6 @@ private:
     std::vector<std::uint64_t> items_;
 };
 
-// T threads, each doing push then pop `ops` times (50/50). Returns operations per second.
 template <class S>
 double run_stack(unsigned T, std::uint64_t ops) {
     S                        stack;
@@ -264,8 +236,6 @@ double run_stack(unsigned T, std::uint64_t ops) {
     const std::uint64_t end = *std::max_element(end_ns.begin(), end_ns.end());
     return static_cast<double>(2 * T * ops) * 1e9 / static_cast<double>(end - start);
 }
-
-// ---------------------------------------------------------------------------------------
 
 struct Options {
     unsigned    runs  = 5;
@@ -315,7 +285,6 @@ T median(std::vector<T> v) {
     return v[v.size() / 2];
 }
 
-// A queue under test: a name and a type-erased "run once" function.
 struct Contender {
     std::string                                                              name;
     std::function<RunResult(unsigned, unsigned, std::uint64_t, double)> run;
@@ -333,8 +302,7 @@ Contender contender(std::string name, std::size_t capacity) {
             }};
 }
 
-// Throughput for every contender, then latency for every contender at half the slowest
-// one's median throughput.
+// Latency runs share one rate: a fraction of the slowest queue's throughput.
 void sweep_config(Csv& csv, const Options& opt, const char* exp, std::vector<Contender>& cs,
                   unsigned P, unsigned C, std::size_t cap, std::uint64_t items) {
     double slowest = 1e18;

@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Turn atom_bench CSV into SVG charts and Markdown tables. Standard library only.
-
-    python3 scripts/plot.py docs/results/results.csv --out docs/img --tables docs/results/tables.md
-
-Every point is the median of the runs for that configuration.
-"""
+"""atom_bench CSV -> SVG charts + Markdown tables (medians). Standard library only."""
 
 import argparse
 import csv
@@ -13,7 +8,7 @@ import os
 import statistics
 from collections import defaultdict
 
-# Colour-blind-safe (Okabe-Ito), fixed per structure so a queue has one colour everywhere.
+# Okabe-Ito (colour-blind safe), one colour per structure.
 COLOURS = {
     "MutexQueue": "#000000",
     "MutexStack": "#000000",
@@ -24,7 +19,7 @@ COLOURS = {
     "Treiber+HP": "#CC79A7",
     "Treiber+EBR": "#E69F00",
 }
-DASHED = {"MutexQueue", "MutexStack"}  # the baselines
+DASHED = {"MutexQueue", "MutexStack"}
 
 
 def load(path):
@@ -47,8 +42,6 @@ def fmt_ns(v):
     return f"{v:.0f} ns"
 
 
-# ---------------------------------------------------------------- SVG line chart
-
 def nice_ticks(lo, hi, log):
     if log:
         a, b = math.floor(math.log10(lo)), math.ceil(math.log10(hi))
@@ -66,7 +59,6 @@ def nice_ticks(lo, hi, log):
 
 
 def line_chart(path, title, x_label, y_label, xs, series, log=False, y_fmt=lambda v: f"{v:g}"):
-    """series: {name: [y or None per x]}"""
     W, H, L, R, T, B = 720, 420, 80, 190, 50, 60
     pw, ph = W - L - R, H - T - B
     values = [v for ys in series.values() for v in ys if v is not None and v > 0]
@@ -123,8 +115,6 @@ def ns_axis(v):
     return fmt_ns(v).replace(".0 ", " ")
 
 
-# ---------------------------------------------------------------- charts and tables
-
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("csv")
@@ -152,7 +142,6 @@ def main():
                 seen.append(r["queue"])
         return seen
 
-    # MPSC: the headline sweep.
     if any(r["experiment"] == "mpsc" for r in rows):
         ps = sorted({int(r["producers"]) for r in rows if r["experiment"] == "mpsc"})
         qs = queues("mpsc")
@@ -180,7 +169,6 @@ def main():
                           f"{fmt_ns(lat['p50'][k])} | {fmt_ns(lat['p99'][k])} | {fmt_ns(lat['p999'][k])} |")
         md.append("")
 
-    # SPSC: one point per capacity.
     if any(r["experiment"] == "spsc" for r in rows):
         caps = sorted({int(r["capacity"]) for r in rows if r["experiment"] == "spsc"})
         qs = queues("spsc")
@@ -194,7 +182,6 @@ def main():
                           f"{fmt_ns(lat['p99'][k])} | {fmt_ns(lat['p999'][k])} |")
         md.append("")
 
-    # MPMC: producers x consumers.
     if any(r["experiment"] == "mpmc" for r in rows):
         pcs = sorted({(int(r["producers"]), int(r["consumers"])) for r in rows if r["experiment"] == "mpmc"})
         qs = queues("mpmc")
@@ -218,7 +205,6 @@ def main():
                           f"{fmt_ns(lat['p99'][k])} | {fmt_ns(lat['p999'][k])} |")
         md.append("")
 
-    # Stacks.
     if any(r["experiment"] == "stack" for r in rows):
         ts = sorted({int(r["producers"]) for r in rows if r["experiment"] == "stack"})
         qs = queues("stack")

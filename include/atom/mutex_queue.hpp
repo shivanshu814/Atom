@@ -10,11 +10,7 @@
 
 namespace atom {
 
-// Baseline: a fixed-capacity ring guarded by one std::mutex. It has the same bounded-ring
-// shape as the lock-free rings and never allocates after construction, so a benchmark
-// against it measures the synchronisation, not the container. It is correct by
-// construction, which also makes it the reference for the stress tests: if a test passes
-// here and fails on a lock-free queue, the bug is in that queue, not in the test.
+// Baseline: a fixed ring behind one mutex.
 template <QueueItem T>
 class MutexQueue {
 public:
@@ -28,7 +24,6 @@ public:
     MutexQueue(const MutexQueue&)            = delete;
     MutexQueue& operator=(const MutexQueue&) = delete;
 
-    // Takes a forwarding reference so a failed push leaves the caller's item untouched.
     template <class U>
     bool try_push(U&& value) {
         std::lock_guard lock(mutex_);
@@ -53,8 +48,6 @@ private:
     const std::size_t          mask_;
     const std::unique_ptr<T[]> buffer_;
 
-    // Everything below is written under the lock by every thread, so it shares one line;
-    // padding it away from the read-only fields above keeps those from bouncing too.
     alignas(kCacheLine) std::mutex mutex_;
     std::size_t head_ = 0;
     std::size_t tail_ = 0;

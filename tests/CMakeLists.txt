@@ -18,10 +18,7 @@ add_executable(atom_tests
 target_link_libraries(atom_tests PRIVATE atom::atom atom_warnings GTest::gtest_main)
 gtest_discover_tests(atom_tests DISCOVERY_TIMEOUT 60 PROPERTIES TIMEOUT 600)
 
-# Negative test (milestone M2): the SPSC queue with its publishing store weakened to relaxed.
-# Only meaningful under TSan. It passes only if TSan prints a data-race report; any other
-# outcome (clean run, different crash) fails. abort_on_error=0 because TSan on macOS aborts
-# by default, and ctest treats a signal as a crash rather than reading the output.
+# Passes only on a TSan race report. abort_on_error=0 so ctest can read the output.
 if(ATOM_SANITIZER STREQUAL "thread")
     add_executable(atom_negative_spsc negative_spsc.cpp)
     target_compile_definitions(atom_negative_spsc PRIVATE ATOM_SPSC_WEAK_PUBLISH)

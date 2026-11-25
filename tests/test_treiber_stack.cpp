@@ -20,7 +20,6 @@ using atom::TreiberStack;
 using atom::test::Item;
 using atom::test::kUnderTsan;
 
-// Counts live objects, so a test can prove every node was freed.
 struct Counted {
     static inline std::atomic<long> live{0};
     int                             v = 0;
@@ -30,7 +29,6 @@ struct Counted {
     ~Counted() { live.fetch_sub(1, std::memory_order_relaxed); }
 };
 
-// Frees whatever the calling thread still has waiting, for whichever scheme it uses.
 template <class R>
 void drain_main_thread() {
     if constexpr (std::is_same_v<R, HazardPointers>) atom::hp::drain_this_thread();
@@ -84,9 +82,6 @@ TYPED_TEST(TreiberStackTest, Stress8Threads) {
     drain_main_thread<TypeParam>();
 }
 
-// The M7 / M8 "no leaks" check, without relying on a leak tool: after the worker threads
-// have exited (each frees its own retired nodes on the way out) and the main thread has
-// drained, every value ever constructed has been destroyed and nothing is pending.
 TYPED_TEST(TreiberStackTest, EveryNodeIsFreed) {
     if constexpr (std::is_same_v<TypeParam, NoReclaim>) {
         GTEST_SKIP() << "NoReclaim leaks popped nodes by design";
@@ -113,8 +108,6 @@ TYPED_TEST(TreiberStackTest, EveryNodeIsFreed) {
     }
 }
 
-// One thread stops inside a critical section (holds a guard) while others keep popping.
-// Returns the number of retired-but-unfreed nodes seen while it is stalled.
 template <class R>
 std::int64_t pending_while_one_thread_stalls(int ops_per_worker) {
     TreiberStack<Item, R> s;
@@ -122,8 +115,6 @@ std::int64_t pending_while_one_thread_stalls(int ops_per_worker) {
 
     std::atomic<bool> stalled{false}, release_stall{false};
     std::thread       staller([&] {
-        // A reader paused mid-operation: inside a critical section (epochs) or holding a
-        // published hazard (hazard pointers) on some address.
         int               dummy = 0;
         std::atomic<int*> src{&dummy};
         typename R::Guard guard;
@@ -143,8 +134,7 @@ std::int64_t pending_while_one_thread_stalls(int ops_per_worker) {
                 (void)s.pop();
             }
             done.fetch_add(1, std::memory_order_release);
-            // Thread exit frees this thread's nodes, which for epochs must wait for the
-            // stalled thread; so measure before any worker is allowed to finish.
+            // Epoch drain at thread exit waits for the staller, so measure first.
             while (!release_stall.load(std::memory_order_acquire)) std::this_thread::yield();
         });
     }
@@ -161,15 +151,12 @@ std::int64_t pending_while_one_thread_stalls(int ops_per_worker) {
     return during;
 }
 
-// Epochs: one stalled reader stops all freeing, so memory grows with the work done.
 TEST(Reclamation, EpochsGrowWhileOneThreadStalls) {
     const int          ops    = 20'000;
     const std::int64_t during = pending_while_one_thread_stalls<EpochReclaim>(ops);
     EXPECT_GE(during, 2 * ops - 200) << "almost every popped node stays unfreed";
 }
 
-// Hazard pointers: the stalled reader pins at most its own slots; the rest is freed, so
-// what is waiting stays below the scan threshold of each worker plus the pinned node.
 TEST(Reclamation, HazardPointersStayBoundedWhileOneThreadStalls) {
     const int          ops    = 20'000;
     const std::int64_t during = pending_while_one_thread_stalls<HazardPointers>(ops);

@@ -1,13 +1,5 @@
 #pragma once
 
-// One stress test for every structure. Producers push (producer_id, seq) items while
-// consumers pop them, all released at once by a shared `go` flag so they really overlap.
-// After every thread has joined, the items received are checked for:
-//   1. no loss, no duplicates: every (id, seq) seen exactly once
-//   2. per-producer FIFO (queues only): each consumer sees one producer's seq increasing
-//   3. no garbage: nothing that was never pushed
-// Jitter (an occasional yield at random points) changes the interleavings from run to run.
-
 #include <gtest/gtest.h>
 
 #include <atomic>
@@ -32,9 +24,7 @@ inline constexpr bool kUnderTsan = false;
 inline constexpr bool kUnderTsan = false;
 #endif
 
-// Copied field by field on purpose. A trivially copyable 16-byte struct is copied with
-// memcpy, and TSan on macOS (Apple clang 21) does not report races through memcpy: the
-// negative test passed silently until this was changed. Plain loads and stores are seen.
+// Field by field: TSan on macOS misses races through memcpy.
 struct Item {
     std::uint32_t producer = 0;
     std::uint32_t pad      = 0;
@@ -51,7 +41,6 @@ struct Item {
     }
 };
 
-// Cheap per-thread random source (xorshift64). Each thread owns one, so no sharing.
 class Jitter {
 public:
     Jitter(bool enabled, std::uint64_t seed) : enabled_(enabled), state_(seed * 0x9E3779B97F4A7C15ull + 1) {}
@@ -77,8 +66,6 @@ struct QueueStress {
     bool          jitter       = true;
 };
 
-// Checks the received items and reports at most a few failures of each kind, so a broken
-// queue prints a readable message instead of a million EXPECT lines.
 inline void check_items(const std::vector<std::vector<Item>>& received, unsigned producers,
                         std::uint64_t per_producer, bool check_fifo) {
     std::vector<std::uint8_t> seen(static_cast<std::size_t>(producers) * per_producer, 0);
@@ -133,8 +120,6 @@ void run_queue_stress(Q& q, const QueueStress& cfg) {
         threads.emplace_back([&, p] {
             Jitter  jitter(cfg.jitter, p + 1);
             Backoff backoff;
-            // acquire: pairs with the release below; nothing here depends on it for
-            // correctness, it only lines the threads up at the start.
             while (!go.load(std::memory_order_acquire)) cpu_relax();
             for (std::uint64_t s = 0; s < cfg.per_producer; ++s) {
                 const Item it{p, 0, s};
@@ -152,8 +137,6 @@ void run_queue_stress(Q& q, const QueueStress& cfg) {
             out.reserve(total / cfg.consumers + 1);
             while (!go.load(std::memory_order_acquire)) cpu_relax();
             Item it;
-            // relaxed: the counter only decides when to stop; the items themselves are
-            // synchronised by the queue, and join() orders everything for the checks.
             while (consumed.load(std::memory_order_relaxed) < total) {
                 if (q.try_pop(it)) {
                     out.push_back(it);
@@ -175,9 +158,6 @@ void run_queue_stress(Q& q, const QueueStress& cfg) {
     EXPECT_FALSE(q.try_pop(leftover)) << "queue not empty after every item was consumed";
 }
 
-// Stacks are LIFO, so there is no order to check. Every thread pushes its own items and pops
-// after each push (50/50), which keeps pops racing with pushes and with each other. Whatever
-// is still on the stack at the end is drained by the main thread.
 template <class S>
 void run_stack_stress(S& stack, unsigned threads_count, std::uint64_t per_thread, bool jitter_on = true) {
     std::atomic<bool>              go{false};

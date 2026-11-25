@@ -13,7 +13,6 @@ using atom::test::kUnderTsan;
 static_assert(atom::ConcurrentQueue<atom::SpscQueue<Item>>);
 static_assert(atom::ConcurrentQueue<atom::NaiveSpscQueue<Item>>);
 
-// The layout the design promises: three separate lines, and nothing after the last one.
 static_assert(alignof(atom::SpscQueue<Item>) == atom::kCacheLine);
 static_assert(sizeof(atom::SpscQueue<Item>) == 3 * atom::kCacheLine);
 
@@ -40,7 +39,6 @@ TYPED_TEST(SpscQueueTest, FifoFullAndEmpty) {
     EXPECT_FALSE(q.try_pop(out));
 }
 
-// Pushes and pops past the end of the ring many times, so the counter & mask wrap is used.
 TYPED_TEST(SpscQueueTest, WrapsAroundTheRing) {
     TypeParam q(8);
     Item      out;
@@ -66,8 +64,6 @@ TYPED_TEST(SpscQueueTest, MoveOnlyItemsAndFailedPushKeepsTheItem) {
     EXPECT_EQ(*out, 1);
 }
 
-// A tiny ring makes the queue flip between full and empty constantly: the cached indices
-// are refreshed on almost every call, which is where an ordering bug would show.
 TYPED_TEST(SpscQueueTest, StressTinyRing) {
     TypeParam q(2);
     atom::test::run_queue_stress(q, {.producers = 1, .consumers = 1, .per_producer = 300'000});

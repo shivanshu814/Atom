@@ -54,8 +54,6 @@ TEST(BoundedMpmcQueue, Stress4P1C) {
     atom::test::run_queue_stress(q, {.producers = 4, .consumers = 1, .per_producer = 200'000});
 }
 
-// Per-producer order holds per consumer: one consumer can never take a producer's later
-// item before that producer's earlier one, because positions are claimed in order.
 TEST(BoundedMpmcQueue, Stress4P4C) {
     BoundedMpmcQueue<Item> q(1024);
     atom::test::run_queue_stress(q, {.producers = 4, .consumers = 4, .per_producer = 200'000});

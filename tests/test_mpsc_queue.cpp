@@ -15,7 +15,6 @@ using atom::test::kUnderTsan;
 
 static_assert(atom::ConcurrentQueue<MpscQueue<Item>>);
 
-// Counts live objects, so a test can prove every node the queue allocated was freed.
 struct Counted {
     static inline std::atomic<long> live{0};
     int                             v = 0;
@@ -47,7 +46,6 @@ TEST(MpscQueue, MoveOnlyItems) {
     EXPECT_EQ(*out, 7);
 }
 
-// Nodes popped and nodes still queued when the queue dies are both freed.
 TEST(MpscQueue, FreesEveryNode) {
     {
         MpscQueue<Counted> q;
@@ -68,7 +66,6 @@ TEST(MpscQueue, Stress4P1C) {
     atom::test::run_queue_stress(q, {.producers = 4, .consumers = 1, .per_producer = 250'000});
 }
 
-// The M4 milestone: 8 producers, 1 consumer.
 TEST(MpscQueue, Stress8P1C) {
     MpscQueue<Item> q;
     atom::test::run_queue_stress(

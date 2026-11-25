@@ -9,12 +9,7 @@
 
 namespace atom::bench {
 
-// Log-linear latency histogram (the HdrHistogram idea). Values below 64 get a bucket each;
-// above that, every power of two is split into 32 equal buckets, so a reported value is at
-// most about 3% above the true one, at any magnitude, in a fixed 15 KB array.
-//
-// One per thread, merged at the end: sharing one between threads would add contention to
-// exactly the path being measured.
+// Log-linear: 32 buckets per power of two, values up to ~3% high.
 class Histogram {
 public:
     void record(std::uint64_t v) noexcept {
@@ -29,8 +24,6 @@ public:
         max_ = std::max(max_, o.max_);
     }
 
-    // The smallest bucket upper bound that covers fraction q of the samples, capped at the
-    // largest value seen.
     std::uint64_t percentile(double q) const noexcept {
         if (total_ == 0) return 0;
         const auto    target = static_cast<std::uint64_t>(std::ceil(q * static_cast<double>(total_)));

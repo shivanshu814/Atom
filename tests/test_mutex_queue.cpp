@@ -47,7 +47,6 @@ TEST(MutexQueue, Stress1P1C) {
     atom::test::run_queue_stress(q, {.producers = 1, .consumers = 1, .per_producer = 200'000});
 }
 
-// The M1 milestone: 4 producers, 1 consumer, 1M items each.
 TEST(MutexQueue, Stress4P1C) {
     MutexQueue<Item> q(1024);
     atom::test::run_queue_stress(
